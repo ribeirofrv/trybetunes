@@ -21,7 +21,8 @@ class Album extends Component {
     this.setState((prevState) => ({ ...prevState, isLoading: true }));
 
     const albumPreview = await getMusics(id);
-    const tracks = albumPreview.filter((key) => key.wrapperType === 'track');
+    console.log(albumPreview);
+    const tracks = albumPreview.filter((key) => key.kind === 'song');
 
     this.setState(({ isLoading: false, collection: albumPreview[0], tracks }));
   }
@@ -46,6 +47,7 @@ class Album extends Component {
             key={ trackId }
             trackName={ trackName }
             previewUrl={ previewUrl }
+            trackId={ trackId }
           />
         ))}
       </div>
