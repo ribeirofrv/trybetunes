@@ -11,25 +11,18 @@ class MusicCard extends Component {
     this.onFavoriteCheckboxClick = this.onFavoriteCheckboxClick.bind(this);
   }
 
-  async componentDidMount() {
-    await this.addFavoriteSong;
-    await this.onFavoriteCheckboxClick;
-  }
-
   async onFavoriteCheckboxClick({ target: { checked } }) {
-    // console.log(checked);
     this.setState({ isChecked: checked, isLoading: true });
     await this.addFavoriteSong();
   }
 
   async addFavoriteSong() {
     const { trackName, previewUrl, trackId } = this.props;
-    const { isChecked } = this.state;
 
     const songDetails = { trackName, previewUrl, trackId };
 
     this.setState({ isLoading: true });
-    if (isChecked) await addSong(songDetails);
+    await addSong(songDetails);
     this.setState({ isLoading: false });
   }
 
@@ -60,6 +53,7 @@ class MusicCard extends Component {
             name="favorite"
             id={ `checkbox-music-${trackId}` }
             onChange={ this.onFavoriteCheckboxClick }
+            onClick={ this.onFavoriteCheckboxClick }
             checked={ isChecked }
           />
         </label>
