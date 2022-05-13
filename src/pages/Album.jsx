@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import getMusics from '../services/musicsAPI';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
 import MusicCard from '../components/MusicCard';
@@ -8,27 +9,51 @@ import MusicCard from '../components/MusicCard';
 class Album extends Component {
   constructor() {
     super();
-    this.state = { collection: {}, tracks: [], isLoading: false };
+    this.state = { collection: {}, tracks: [], isLoading: true, favoriteSongs: [] };
+
     this.getMusicsPreview = this.getMusicsPreview.bind(this);
+    this.favoriteSongs = this.favoriteSongs.bind(this);
+    this.updateFavoriteSongs = this.updateFavoriteSongs.bind(this);
   }
 
   async componentDidMount() {
     await this.getMusicsPreview();
+    await this.favoriteSongs();
   }
 
   async getMusicsPreview() {
     const { match: { params: { id } } } = this.props;
-    this.setState((prevState) => ({ ...prevState, isLoading: true }));
 
     const albumPreview = await getMusics(id);
-    console.log(albumPreview);
     const tracks = albumPreview.filter((key) => key.kind === 'song');
 
-    this.setState(({ isLoading: false, collection: albumPreview[0], tracks }));
+    this.setState(({ collection: albumPreview[0], tracks }));
+  }
+
+  async favoriteSongs() {
+    const favoriteSongs = await getFavoriteSongs();
+
+    this.setState((prevState) => (
+      { ...prevState, favoriteSongs }
+    ), () => {
+      this.setState({ isLoading: false });
+    });
+  }
+
+  async updateFavoriteSongs() {
+    const favoriteSongs = await getFavoriteSongs();
+    this.setState({ favoriteSongs });
   }
 
   render() {
-    const { isLoading, collection: { artistName, collectionName }, tracks } = this.state;
+    const {
+      isLoading,
+      collection: {
+        artistName,
+        collectionName,
+      }, tracks,
+      favoriteSongs } = this.state;
+
     return isLoading ? (
       <Loading />
     ) : (
@@ -42,12 +67,15 @@ class Album extends Component {
             { collectionName }
           </h2>
         </div>
-        {tracks.map(({ trackId, trackName, previewUrl }) => (
+        {tracks.map((track) => (
           <MusicCard
-            key={ trackId }
-            trackName={ trackName }
-            previewUrl={ previewUrl }
-            trackId={ trackId }
+            key={ track.trackId }
+            trackName={ track.trackName }
+            previewUrl={ track.previewUrl }
+            trackId={ track.trackId }
+            track={ track }
+            favoriteSongs={ favoriteSongs }
+            updateFavoriteSongs={ this.updateFavoriteSongs }
           />
         ))}
       </div>
