@@ -39,7 +39,7 @@ Contribuições são bem-vindas! Se você deseja contribuir com melhorias para e
 
 ## Autor
 
-- Seu Nome
+- Fran Ribeiro
 - [GitHub](https://github.com/ribeirofrv)
 - E-mail: ribeirofrv@gmail.com
 
